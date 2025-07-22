@@ -1,15 +1,15 @@
-export interface BitpinMatch {
+export interface Match {
   id: string;
   price: string;
   base_amount: string;
   quote_amount: string;
   side: "buy" | "sell";
 }
-export interface BitpinMatchesUpdateMessage {
+export interface MatchesMessage {
   event: "matches_update";
   symbol: string;
   event_time: string;
-  matches: BitpinMatch[];
+  matches: Match[];
 }
 export interface Currency {
   id: number;
