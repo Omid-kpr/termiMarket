@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { dlog } from "./dashboard";
+import { dlog } from "../ui/dashboard";
 
 interface Candle {
   open: number;
@@ -22,8 +22,6 @@ const candles: Record<TimeFrame, Map<number, Candle>> = {
 
 function getTimeBucket(ts: string, tf: TimeFrame): number {
   const d = dayjs(ts);
-  dlog(`dayjs is: ${d}`);
-  dlog(`the Date value is: ${new Date(d.valueOf()).toLocaleString()}`);
   switch (tf) {
     case "1m":
       return d.startOf("minute").valueOf();

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Currency } from "./types/types";
+import { Currency } from "../types/types";
 
 export async function fetchSymbols() {
   const { data } = await axios.get("https://api.bitpin.ir/v1/mkt/currencies/");

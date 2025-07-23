@@ -1,8 +1,8 @@
 // dashboard.ts
 import * as blessed from "blessed";
 import * as contrib from "blessed-contrib";
-import { getAllCandles } from "./candles";
-import { Match } from "./types/types";
+import { getAllCandles } from "../logic/candles";
+import { Match } from "../types/types";
 
 const screen = blessed.screen();
 const grid = new contrib.grid({ rows: 12, cols: 12, screen });
@@ -47,7 +47,7 @@ screen.key(["escape", "q", "C-c"], () => process.exit(0));
 
 export function renderTrade(match: Match) {
   //dlog(match);
-  const line = `{${match.side === "buy" ? "green" : "red"}-fg}${match.side.toUpperCase()} ${match.base_amount}@${match.price}{/}`;
+  const line = `{${match.side === "buy" ? "green" : "red"}-fg}${match.side.toUpperCase()} amount: ${match.base_amount} price: ${match.price}{/}`;
   tradesBox.log(line);
   screen.render();
 }
@@ -88,6 +88,7 @@ export function renderCandles() {
 }
 
 const logBox = blessed.log({
+  tags: true,
   bottom: 0,
   height: 8,
   width: "100%",

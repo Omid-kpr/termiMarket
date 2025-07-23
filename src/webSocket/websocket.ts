@@ -1,7 +1,7 @@
 import WebSocket from "ws";
-import { Match } from "./types/types";
-import { updateCandles } from "./candles";
-import { dlog } from "./dashboard";
+import { Match } from "../types/types";
+import { updateCandles } from "../logic/candles";
+import { dlog } from "../ui/dashboard";
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -19,7 +19,7 @@ export function connectToBitpin(onTrade: (match: Match) => void) {
       ws.send(JSON.stringify({ message: "PING" }));
       dlog("testing connection...");
     } catch (e) {
-      dlog("Failed to start testing:", e);
+      dlog("{red-fg}Failed to start testing:{/red-fg}", e);
     }
   };
 
@@ -31,9 +31,9 @@ export function connectToBitpin(onTrade: (match: Match) => void) {
           symbols: ["BTC_USDT", "BTC_IRT", "USDC_IRT"],
         }),
       );
-      dlog("sub request sent");
+      dlog("{/green-fg}sub request sent{/green-fg}");
     } catch (e) {
-      dlog("failed to subscribe: ", e);
+      dlog("{red-fg}failed to subscribe: {/red-fg}", e);
     }
   };
 
@@ -42,11 +42,13 @@ export function connectToBitpin(onTrade: (match: Match) => void) {
     const elapsed = now - lastPongAt;
 
     if (elapsed > TIMEOUT) {
-      dlog("server did not respond in time. Closing connection...");
+      dlog(
+        "{red-fg}server did not respond in time. Closing connection...{/red-fg}",
+      );
       clearInterval(interval);
       ws.close();
 
-      dlog("Waiting for 2s before reconnect...");
+      dlog("{yellow-fg}Waiting for 2s before reconnect...{/yellow-fg}");
       await delay(2000);
       connectToBitpin(onTrade);
     } else {
@@ -55,7 +57,7 @@ export function connectToBitpin(onTrade: (match: Match) => void) {
   }, PING_INTERVAL);
 
   ws.on("open", () => {
-    dlog("WebSocket connected");
+    dlog("{green-fg}WebSocket connected{/green-fg}");
     sendPing();
     subscribe();
   });
@@ -68,7 +70,9 @@ export function connectToBitpin(onTrade: (match: Match) => void) {
         dlog("connection is Live");
         lastPongAt = Date.now();
       } else if (msg.event === "matches_update") {
-        dlog(msg);
+        dlog(
+          `{yellow-fg}data recieved at ${new Date().toString()}{/yellow-fg}`,
+        );
         const trades = msg.matches as Match[];
         trades.forEach((match) => {
           const price = parseFloat(match.price);
@@ -81,21 +85,21 @@ export function connectToBitpin(onTrade: (match: Match) => void) {
       } else if (
         msg.message === "sub to markets ['BTC_USDT', 'BTC_IRT', 'USDC_IRT']"
       ) {
-        dlog("subscripton seccessful");
+        dlog("{yellow-fg}subscripton seccessful{/yellow-fg}");
       } else {
         if (msg.event !== "market_data") {
-          dlog("Unhandled message:", msg);
+          dlog("{blue-fg}Unhandled message:{/blue-fg}", msg);
         }
       }
     } catch (err) {
-      dlog("Failed to parse message:", err);
+      dlog("{red-fg}Failed to parse message:{/red-fg}", err);
     }
   });
   ws.on("error", (error) => {
-    dlog("WebSocket error:", error);
+    dlog("{red-fg}WebSocket error:{/red-fg}", error);
   });
   ws.on("close", () => {
-    dlog("WebSocket closed. Clearing health check.");
+    dlog("{red-fg}WebSocket closed. Clearing health check.{/red-fg}");
     clearInterval(interval);
   });
 
