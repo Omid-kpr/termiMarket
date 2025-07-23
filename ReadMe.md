@@ -1,4 +1,4 @@
-# 📊 terminal market viewer
+# 📊 termiMarket
 
 ![dashboard](./assets/dashboard.jpeg)
 
